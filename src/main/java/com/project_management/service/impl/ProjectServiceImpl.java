@@ -6,6 +6,7 @@ import com.project_management.entity.ProjectMember;
 import com.project_management.entity.User;
 import com.project_management.enums.ProjectRole;
 import com.project_management.enums.Role;
+import com.project_management.ingestion.WorkspaceKnowledgeIndexer;
 import com.project_management.repository.OrganizationRepository;
 import com.project_management.repository.ProjectMemberRepository;
 import com.project_management.repository.ProjectRepository;
@@ -29,6 +30,8 @@ public class ProjectServiceImpl implements ProjectService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final ProjectMemberRepository projectMemberRepository;
+    private final WorkspaceKnowledgeIndexer workspaceKnowledgeIndexer; // add this
+
 
     @Override
     public ProjectResponse createProject(ProjectRequest request) {
@@ -61,6 +64,17 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectMemberRepository.save(member);
 
+        workspaceKnowledgeIndexer.indexProject(
+                organization.getId(),
+                savedProject.getId(),
+                savedProject.getName(),
+                savedProject.getDescription(),
+                savedProject.getStatus() != null ? savedProject.getStatus().toString() : "Not specified",
+                savedProject.getPriority() != null ? savedProject.getPriority().toString() : "Not specified",
+                savedProject.getStartDate() != null ? savedProject.getStartDate().toString() : "Not specified",
+                savedProject.getEndDate() != null ? savedProject.getEndDate().toString() : "Not specified",
+                createdBy.getFirstName() + " " + createdBy.getLastName()
+        );
         ProjectResponse response = new ProjectResponse();
 
         response.setId(savedProject.getId());
@@ -104,6 +118,17 @@ public class ProjectServiceImpl implements ProjectService {
         Project updatedProject = projectRepository.save(project);
         System.out.println("Project ID = " + project.getId());
         System.out.println("Organization ID = " + organization.getId());
+        workspaceKnowledgeIndexer.indexProject(
+                organization.getId(),
+                updatedProject.getId(),
+                updatedProject.getName(),
+                updatedProject.getDescription(),
+                updatedProject.getStatus() != null ? updatedProject.getStatus().toString() : "Not specified",
+                updatedProject.getPriority() != null ? updatedProject.getPriority().toString() : "Not specified",
+                updatedProject.getStartDate() != null ? updatedProject.getStartDate().toString() : "Not specified",
+                updatedProject.getEndDate() != null ? updatedProject.getEndDate().toString() : "Not specified",
+                createdBy.getFirstName() + " " + createdBy.getLastName()
+        );
 
         return modelMapper.map(updatedProject, ProjectResponse.class);
     }
@@ -114,7 +139,13 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectResponse response = modelMapper.map(project, ProjectResponse.class);
 
+        if (project.getOrganization() != null) {
+            response.setOrganizationId(project.getOrganization().getId());
+            response.setOrganizationName(project.getOrganization().getName());
+        }
+
         if (project.getCreatedBy() != null) {
+            response.setCreatedBy(project.getCreatedBy().getId());
             response.setCreatedByName(
                     project.getCreatedBy().getFirstName() + " " + project.getCreatedBy().getLastName()
             );

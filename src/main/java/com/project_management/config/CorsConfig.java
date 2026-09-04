@@ -17,6 +17,7 @@ public class CorsConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173",
                 "https://ai-project-management.azizabdul04327.workers.dev"
         ));
 

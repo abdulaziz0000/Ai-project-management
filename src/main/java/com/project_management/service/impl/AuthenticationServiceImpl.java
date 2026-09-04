@@ -17,6 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -33,6 +34,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.frontend-url}")
+    private String appFrontendUrl;
     @Override
     public AuthenticationResponse login(LoginRequest request) {
 
@@ -100,9 +103,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         passwordResetTokenRepository.save(resetToken);
 
         String resetLink =
-                "https://ai-project-management.azizabdul04327.workers.dev/reset-password?token="
-                        + token;
-
+                appFrontendUrl + "/reset-password?token=" + token;
         String subject =
                 "Password Reset - Project Management System";
 

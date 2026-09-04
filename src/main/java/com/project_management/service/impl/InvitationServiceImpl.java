@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -33,6 +34,9 @@ public class InvitationServiceImpl implements InvitationService {
     private final ProjectMemberRepository projectMemberRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${app.frontend-url}")
+    private String appFrontendUrl;
 
     @Transactional
     @Override
@@ -145,8 +149,7 @@ public class InvitationServiceImpl implements InvitationService {
         invitationRepository.save(invitation);
 
         String link =
-                "https://ai-project-management.azizabdul04327.workers.dev/register?token="
-                        + token;
+                appFrontendUrl + "/register?token=" + token;
 
         String subject="Project Invitation";
 

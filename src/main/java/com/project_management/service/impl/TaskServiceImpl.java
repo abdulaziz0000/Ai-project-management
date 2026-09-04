@@ -91,7 +91,6 @@ public class TaskServiceImpl implements TaskService {
         return modelMapper.map(savedTask, TaskResponse.class);
     }
 
-
     @Override
     public TaskResponse updateTask(UUID id, TaskRequest request) {
 
@@ -114,9 +113,21 @@ public class TaskServiceImpl implements TaskService {
 
         Task updatedTask = taskRepository.save(task);
 
+        workspaceKnowledgeIndexer.indexTask(
+                project.getOrganization().getId(),
+                project.getId(),
+                updatedTask.getId(),
+                project.getName(),
+                updatedTask.getTitle(),
+                updatedTask.getDescription(),
+                updatedTask.getStatus().name(),
+                updatedTask.getPriority().name(),
+                user.getFirstName() + " " + user.getLastName(),
+                user.getFirstName() + " " + user.getLastName()
+        );
+
         return modelMapper.map(updatedTask, TaskResponse.class);
     }
-
 
     @Override
     public void assignTask(UUID taskId, UUID userId) {
