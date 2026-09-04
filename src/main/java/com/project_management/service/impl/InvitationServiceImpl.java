@@ -145,7 +145,7 @@ public class InvitationServiceImpl implements InvitationService {
         invitationRepository.save(invitation);
 
         String link =
-                "http://localhost:5173/register?token="
+                "https://ai-project-management.azizabdul04327.workers.dev/register?token="
                         + token;
 
         String subject="Project Invitation";

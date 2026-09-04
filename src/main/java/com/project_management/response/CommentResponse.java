@@ -2,7 +2,7 @@ package com.project_management.response;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -14,5 +14,5 @@ public class CommentResponse {
     private String taskTitle;
     private UUID userId;
     private String userName;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }

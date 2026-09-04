@@ -100,7 +100,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         passwordResetTokenRepository.save(resetToken);
 
         String resetLink =
-                "http://localhost:5173/reset-password?token="
+                "https://ai-project-management.azizabdul04327.workers.dev/reset-password?token="
                         + token;
 
         String subject =

@@ -11,7 +11,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/project-members")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "https://ai-project-management.azizabdul04327.workers.dev")
 public class ProjectMemberController {
 
     private final ProjectMemberService projectMemberService;
