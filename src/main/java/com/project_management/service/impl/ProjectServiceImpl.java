@@ -17,7 +17,9 @@ import com.project_management.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
+import com.project_management.repository.TaskRepository;
+import com.project_management.repository.InvitationRepository;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,6 +33,8 @@ public class ProjectServiceImpl implements ProjectService {
     private final ModelMapper modelMapper;
     private final ProjectMemberRepository projectMemberRepository;
     private final WorkspaceKnowledgeIndexer workspaceKnowledgeIndexer; // add this
+    private final TaskRepository taskRepository;
+    private final InvitationRepository invitationRepository;
 
 
     @Override
@@ -186,13 +190,19 @@ public class ProjectServiceImpl implements ProjectService {
                 })
                 .toList();
     }
-
     @Override
+    @Transactional
     public void deleteProject(UUID id) {
 
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
+        // Delete child records first
+        invitationRepository.deleteByProjectId(id);
+        taskRepository.deleteByProjectId(id);
+        projectMemberRepository.deleteByProjectId(id);
+
+        // Delete project
         projectRepository.delete(project);
     }
 }

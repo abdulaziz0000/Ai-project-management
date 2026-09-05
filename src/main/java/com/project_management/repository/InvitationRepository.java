@@ -20,4 +20,6 @@ public interface InvitationRepository extends JpaRepository<Invitation, UUID> {
             String email,
             InvitationStatus status
     );
+
+    void deleteByProjectId(UUID projectId);
 }

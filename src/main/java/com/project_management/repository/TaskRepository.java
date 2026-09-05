@@ -17,4 +17,7 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
             TaskStatus status
     );
 
+
+    void deleteByProjectId(UUID projectId);
+
 }
