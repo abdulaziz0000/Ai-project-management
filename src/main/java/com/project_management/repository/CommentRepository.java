@@ -13,7 +13,7 @@ public interface CommentRepository extends JpaRepository<Comment, UUID> {
 
     List<Comment> findByTaskId(UUID taskId);
 
-
+    void deleteByProjectId(@Param("projectId") UUID projectId);
 
     @Query("""
             SELECT c

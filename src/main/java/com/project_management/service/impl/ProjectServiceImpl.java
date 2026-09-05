@@ -7,18 +7,13 @@ import com.project_management.entity.User;
 import com.project_management.enums.ProjectRole;
 import com.project_management.enums.Role;
 import com.project_management.ingestion.WorkspaceKnowledgeIndexer;
-import com.project_management.repository.OrganizationRepository;
-import com.project_management.repository.ProjectMemberRepository;
-import com.project_management.repository.ProjectRepository;
-import com.project_management.repository.UserRepository;
+import com.project_management.repository.*;
 import com.project_management.request.ProjectRequest;
 import com.project_management.response.ProjectResponse;
 import com.project_management.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import com.project_management.repository.TaskRepository;
-import com.project_management.repository.InvitationRepository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
@@ -35,6 +30,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final WorkspaceKnowledgeIndexer workspaceKnowledgeIndexer; // add this
     private final TaskRepository taskRepository;
     private final InvitationRepository invitationRepository;
+    private final CommentRepository commentRepository;
 
 
     @Override
@@ -197,12 +193,19 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        // Delete child records first
-        invitationRepository.deleteByProjectId(id);
+        // Delete comments first because comments reference tasks
+        commentRepository.deleteByProjectId(id);
+
+        // Delete tasks because tasks reference the project
         taskRepository.deleteByProjectId(id);
+
+        // Delete invitations
+        invitationRepository.deleteByProjectId(id);
+
+        // Delete project members
         projectMemberRepository.deleteByProjectId(id);
 
-        // Delete project
+        // Finally delete the project
         projectRepository.delete(project);
     }
 }
