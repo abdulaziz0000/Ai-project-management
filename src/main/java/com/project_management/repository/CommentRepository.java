@@ -2,6 +2,7 @@ package com.project_management.repository;
 
 import com.project_management.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -13,6 +14,11 @@ public interface CommentRepository extends JpaRepository<Comment, UUID> {
 
     List<Comment> findByTaskId(UUID taskId);
 
+    @Modifying
+    @Query("""
+            DELETE FROM Comment c
+            WHERE c.task.project.id = :projectId
+            """)
     void deleteByProjectId(@Param("projectId") UUID projectId);
 
     @Query("""
